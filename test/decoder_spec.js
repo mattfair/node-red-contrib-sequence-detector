@@ -19,14 +19,19 @@ describe('local-decoder Node', function () {
     var flow = [{ id: "n1", type: "decoder", name: "local-decoder" }];
     helper.load(decoderNode, flow, function () {
       var n1 = helper.getNode("n1");
-      n1.should.have.have.property('name', 'local-decoder');
-      done();
+      
+      try{
+        n1.should.have.have.property('name', 'local-decoder');
+        done();
+      }catch(err){
+        return done(err);
+      }
     });
   });
 
   it('should send match on match', function (done) {
     var flow = [
-      { id: "n1", type: "decoder", name: "local-decoder", sequence: ["0"],wires:[["n2"]] },
+      { id: "n1", type: "decoder", name: "local-decoder", sequence: "0",wires:[["n2"]] },
       { id: "n2", type: "helper" }
     ];
     helper.load(decoderNode, flow, function () {
@@ -45,8 +50,8 @@ describe('local-decoder Node', function () {
   });
 
   it('should send reset on mismatch', function (done) {
-    var configSequence = ["0"];
-    var sentSequence = ["1"];
+    var configSequence = "0";
+    var sentSequence = "1";
     var flow = [
       { id: "n1", type: "decoder", name: "local-decoder", sequence: configSequence,wires:[["n2"]] },
       { id: "n2", type: "helper" }
@@ -67,7 +72,7 @@ describe('local-decoder Node', function () {
   });
 
   it('should match two element sequence', function (done) {
-    var configSequence = ['0','1'];
+    var configSequence = '0\n1';
     var sentSequence = ['0','1'];
     var flow = [
       { id: "n1", type: "decoder", name: "local-decoder", sequence: configSequence,wires:[["n2"]] },

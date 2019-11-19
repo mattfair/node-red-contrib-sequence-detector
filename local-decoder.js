@@ -1,7 +1,11 @@
 module.exports = function(RED) {
     function LocalDecoder(config) {
         RED.nodes.createNode(this,config);
-        this.sequence = config.sequence;
+        if(config.sequence){
+            this.sequence = config.sequence.split("\n");
+        }else{
+            config.sequence = [];
+        }
         this.indexCheck = 0;
         var node = this;
         node.on('input', function(msg) {
@@ -21,6 +25,8 @@ module.exports = function(RED) {
                 msg.payload = "reset";
                 node.send(msg);
             }
+
+            this.status({fill:"green",shape:"dot",text:"Index:" + this.indexCheck});
         });
     }
     RED.nodes.registerType("decoder",LocalDecoder);
