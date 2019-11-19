@@ -1,0 +1,15 @@
+{
+    "decoder": {
+        "decoder": "decoder",
+        "label": {
+            "sequence": "Sequence",
+            "watch": "Watch",
+            "watch_payload": "Payload",
+            "watch_topic": "Topic",
+            "watch_both": "Both"
+        },
+        "errors": {
+            "json-error": "error trying to parse string to JSON"
+        }
+    }
+}

@@ -1,0 +1,91 @@
+
+<script type="text/x-red" data-template-name="decoder">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row" style="position: relative; margin-bottom: 0px;">
+        <label for="node-input-sequence"><i class="fa fa-file-code-o"></i> Sequence</span></label>
+        <input type="hidden" id="node-input-sequence" autofocus="autofocus">
+    </div>
+    <div class="form-row node-text-editor-row">
+        <div style="height:250px;" class="node-text-editor" id="node-input-sequence-editor"></div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-watch"><i class="fa fa-code"></i> Watch</span></label>
+        <select id="node-input-watch" style="width:180px;">
+            <option value="topic">Topic</option>
+            <option value="payload">Payload</option>
+            <option value="both">Both</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="decoder">
+    <p>Decoder help here</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('decoder',{
+        color:"rgb(243, 181, 103)",
+        category: 'function',
+        defaults: {
+            name: {value:"decoder"},
+            watch: {value:"topic"},
+            sequence: {value:"one\ntwo\n"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "template.png",
+        paletteLabel: function() {
+            return "decoder";
+        },
+        label: function() {
+            return this.name || "decoder";
+        },
+        outputLabels: function() { return "string"; },
+        oneditprepare: function() {
+            //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
+            var that = this;
+            
+            // $("#node-input-field").typedInput({
+            //     default: 'msg',
+            //     types: ['msg','flow','global'],
+            //     typeField: $("#node-input-fieldType")
+            // });
+
+            this.editor = RED.editor.createEditor({
+                id: 'node-input-sequence-editor',
+                mode: 'ace/mode/handlebars',
+                value: $("#node-input-sequence").val()
+            });
+            RED.library.create({
+                url:"sequences", // where to get the data from
+                type:"sequence", // the type of object the library is for
+                editor:that.editor, // the field name the main text body goes to
+                fields:['name','outputs']
+            });
+            this.editor.focus();
+        },
+        oneditsave: function() {
+            $("#node-input-sequence").val(this.editor.getValue());
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditcancel: function() {
+            this.editor.destroy();
+            delete this.editor;
+        },
+        oneditresize: function(size) {
+            var rows = $("#dialog-form>div:not(.node-text-editor-row)");
+            var height = $("#dialog-form").height();
+            for (var i=0; i<rows.size(); i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            var editorRow = $("#dialog-form>div.node-text-editor-row");
+            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+            $(".node-text-editor").css("height",height+"px");
+            this.editor.resize();
+        }
+    });
+</script>

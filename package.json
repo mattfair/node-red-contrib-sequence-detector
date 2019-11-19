@@ -1,0 +1,20 @@
+{
+    "name": "node-red-local-decoder",
+    "version": "1.0.0",
+    "description": "",
+    "main": "local-decoder.js",
+    "scripts": {
+        "test": "mocha \"test/**/*_spec.js\" --timeout 2000"
+    },
+    "author": "",
+    "license": "ISC",
+    "node-red": {
+        "nodes": {
+            "decoder": "local-decoder.js"
+        }
+    },
+    "devDependencies": {
+        "node-red": "^0.18.4",
+        "node-red-node-test-helper": "^0.1.8"
+    }
+}
