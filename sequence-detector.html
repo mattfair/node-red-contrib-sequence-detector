@@ -1,8 +1,16 @@
 
-<script type="text/x-red" data-template-name="decoder">
+<script type="text/x-red" data-template-name="sequence-detector">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-watch"><i class="fa fa-search"></i> Watch</span></label>
+        <select id="node-input-watch" style="width:180px;">
+            <option value="topic">Topic</option>
+            <option value="payload">Payload</option>
+            <option value="both">Both</option>
+        </select>
     </div>
     <div class="form-row" style="position: relative; margin-bottom: 0px;">
         <label for="node-input-sequence"><i class="fa fa-ellipsis-h"></i> Sequence</span></label>
@@ -11,39 +19,31 @@
     <div class="form-row node-text-editor-row">
         <div style="height:250px;" class="node-text-editor" id="node-input-sequence-editor"></div>
     </div>
-    <div class="form-row">
-        <label for="node-input-watch"><i class="fa fa-code"></i> Watch</span></label>
-        <select id="node-input-watch" style="width:180px;">
-            <option value="topic">Topic</option>
-            <option value="payload">Payload</option>
-            <option value="both">Both</option>
-        </select>
-    </div>
 </script>
 
-<script type="text/x-red" data-help-name="decoder">
+<script type="text/x-red" data-help-name="sequence-detector">
     <p>Decoder help here</p>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('decoder',{
-        color:"rgb(243, 181, 103)",
+    RED.nodes.registerType('sequence-detector',{
+        color:"#E2D96E",
         category: 'function',
         defaults: {
-            name: {value:"decoder"},
+            name: {value:"Sequence Detector"},
             watch: {value:"topic"},
-            sequence: {value:"one\ntwo\n"}
+            sequence: {value:"event1\nevent2\n"}
         },
         inputs:1,
-        outputs:1,
+        outputs:2,
         icon: "font-awesome/fa-ellipsis-h",
         paletteLabel: function() {
-            return "decoder";
+            return "detector";
         },
         label: function() {
-            return this.name || "decoder";
+            return this.name || "sequence-detector";
         },
-        outputLabels: function() { return "string"; },
+        outputLabels: ["match","reset"],
         oneditprepare: function() {
             //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
@@ -59,12 +59,12 @@
                 mode: 'ace/mode/handlebars',
                 value: $("#node-input-sequence").val()
             });
-            RED.library.create({
-                url:"sequences", // where to get the data from
-                type:"sequence", // the type of object the library is for
-                editor:that.editor, // the field name the main text body goes to
-                fields:['name','outputs']
-            });
+            // RED.library.create({
+            //     url:"sequences", // where to get the data from
+            //     type:"sequence", // the type of object the library is for
+            //     editor:that.editor, // the field name the main text body goes to
+            //     fields:['name','outputs']
+            // });
             this.editor.focus();
         },
         oneditsave: function() {

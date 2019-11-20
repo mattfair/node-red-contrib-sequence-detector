@@ -1,6 +1,6 @@
 {
-    "decoder": {
-        "decoder": "decoder",
+    "sequence-detector": {
+        "sequence-detector": "sequence-detector",
         "label": {
             "sequence": "Sequence",
             "watch": "Watch",

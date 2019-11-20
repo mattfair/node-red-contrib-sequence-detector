@@ -1,8 +1,8 @@
 {
-    "name": "node-red-local-decoder",
+    "name": "node-red-contrib-sequence-detector",
     "version": "1.0.0",
     "description": "",
-    "main": "local-decoder.js",
+    "main": "sequence-detector.js",
     "scripts": {
         "test": "mocha \"test/**/*_spec.js\" --timeout 2000"
     },
@@ -10,7 +10,7 @@
     "license": "ISC",
     "node-red": {
         "nodes": {
-            "decoder": "local-decoder.js"
+            "decoder": "sequence-detector.js"
         }
     },
     "devDependencies": {
