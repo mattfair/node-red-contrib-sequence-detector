@@ -22,7 +22,43 @@
 </script>
 
 <script type="text/x-red" data-help-name="sequence-detector">
-    <p>Decoder help here</p>
+    <p>Inspects all incoming messages in order and matches against the configured sequence.</p>
+    
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        Either the payload, topic, or both can be inspected for sequence detection using the <code>watch</code> config option.
+        <dt>payload
+            <span class="property-type">string</span>
+        </dt>
+        <dd> the payload of the message to inspect. </dd>
+        <dt class="optional">topic <span class="property-type">string</span></dt>
+        <dd> the topic to inspect.</dd>
+    </dl>
+
+ <h3>Outputs</h3>
+     <ol class="node-ports">
+         <li>Match output
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>the message payload sent when the full sequence is detected in exact order. The output is <code>match</code>.</dd>
+             </dl>
+         </li>
+         <li>Reset Output
+             <dl class="message-properties">
+                 <dt>payload <span class="property-type">string</span></dt>
+                 <dd>the message payload sent when the sequence detector resets and starts looking for the first element of the sequence again. The output is <code>reset</code>.</dd>
+             </dl>
+         </li>
+     </ol>
+
+<h3>Details</h3>
+    <p><code>msg.payload</code> or <code>msg.topic</code> or both can be used.
+    Messages will be inspected and if a series of messages matches the configured sequence in the exact order, 
+    a <code>match</code> message will be sent. </p>
+    <p>If any message breaks the sequence, the detector will reset and start to look for the configured sequence from the first element of the sequence again.
+    A <code>reset</code> message will be sent.
+    </p>
+
 </script>
 
 <script type="text/javascript">
