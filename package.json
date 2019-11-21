@@ -1,13 +1,23 @@
 {
     "name": "node-red-contrib-sequence-detector",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "A Node-RED node that inspects all incoming messages in order and matches against the configured sequence.",
     "keywords": [ "node-red" ],
     "main": "sequence-detector.js",
     "scripts": {
         "test": "mocha \"test/**/*_spec.js\" --timeout 2000"
     },
-    "author": "",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/kareem613/node-red-contrib-sequence-detector.git"
+    },
+    "bugs": { 
+      "url" : "https://github.com/kareem613/node-red-contrib-sequence-detector/issues"
+    },
+    "author": { 
+       "name" : "Kareem Sultan",
+       "url" : "https://maybe5.com//"
+      },
     "license": "ISC",
     "node-red": {
         "nodes": {
