@@ -1,5 +1,8 @@
 ## Overview
-<code>msg.payload</code> or <code>msg.topic</code> or both can be used.
+The sequence detector can be used to scan input messages for a specific sequence and generate a match message when the input stream of messages matches the sequence. 
+This can be used for input code sequences, triggering based on a complex set of sequential events, or to simplify more complex node structures that produce the same behaviour. 
+
+The sequence detector can be configured to scan <code>msg.payload</code> or <code>msg.topic</code> or both.
 
 Messages will be inspected and if a series of messages matches the configured sequence in the exact order, a <code>match</code> message will be sent.
     
