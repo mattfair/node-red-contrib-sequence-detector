@@ -16,12 +16,59 @@ describe('sequence-detector Node', function () {
   });
 
   it('should be loaded', function (done) {
-    var flow = [{ id: "n1", type: "sequence-detector", name: "sequence-detector" }];
+    var flow = [{ id: "n1", type: "sequence-detector", name: "sequence-detector"}];
     helper.load(decoderNode, flow, function () {
       var n1 = helper.getNode("n1");
       
       try{
         n1.should.have.have.property('name', 'sequence-detector');
+        done();
+      }catch(err){
+        return done(err);
+      }
+    });
+  });
+
+  it('should have default config options', function (done) {
+    var flow = [{ id: "n1", type: "sequence-detector", name: "sequence-detector"}];
+    helper.load(decoderNode, flow, function () {
+      var n1 = helper.getNode("n1");
+      
+      try{
+        n1.should.have.have.property('name', 'sequence-detector');
+        n1.should.have.have.property('sequence', []);
+        n1.should.have.have.property('watch', 'payload');
+        n1.should.have.have.property('timeout', 2000);
+        n1.should.have.have.property('matchMessage', 'match');
+        n1.should.have.have.property('resetMessage', 'reset');
+        n1.should.have.have.property('timeoutMessage', 'timeout');
+        done();
+      }catch(err){
+        return done(err);
+      }
+    });
+  });
+
+  it('should use config options', function (done) {
+    var flow = [{ id: "n1", type: "sequence-detector", name: "sequence-detector",
+      sequence:"one\ntwo",
+      watch: "topic",
+      timeout: 1000,
+      matchMessage: "match message",
+      resetMessage: "reset message",
+      timeoutMessage: "timeout message"
+    }];
+    helper.load(decoderNode, flow, function () {
+      var n1 = helper.getNode("n1");
+      
+      try{
+        n1.should.have.have.property('name', 'sequence-detector');
+        n1.should.have.have.property('sequence', ['one', 'two']);
+        n1.should.have.have.property('watch', 'topic');
+        n1.should.have.have.property('timeout', 1000);
+        n1.should.have.have.property('matchMessage', 'match message');
+        n1.should.have.have.property('resetMessage', 'reset message');
+        n1.should.have.have.property('timeoutMessage', 'timeout message');
         done();
       }catch(err){
         return done(err);
@@ -161,6 +208,28 @@ describe('sequence-detector Node', function () {
       });
       decoder.receive({topic:topic, payload: payload });
     });
-  });
+  }); 
+
+  // it('should timeout', function(done){
+  //   var flow = [
+  //     { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: "0\n1",wires:[["n2"]] },
+  //     { id: "n2", type: "helper" }
+  //   ];
+  //   helper.load(decoderNode, flow, function () {
+  //     var receiver = helper.getNode("n2");
+  //     var decoder = helper.getNode("n1");
+  //     receiver.on("input", function (msg) {
+  //       try{
+  //         msg.should.have.property('payload', 'timeout');
+  //         done();
+  //       }catch(err){
+  //         return done(err);
+  //       }
+  //     });
+  //     decoder.receive({ payload: "0" }); 
+  //   });
+    
+  // });
+
 });
 

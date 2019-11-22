@@ -4,33 +4,47 @@ module.exports = function(RED) {
         if(config.sequence){
             this.sequence = config.sequence.split("\n");
         }else{
-            config.sequence = [];
+            this.sequence = [];
         }
         this.watch = config.watch != undefined ? config.watch : "payload" ;
+        this.timeout = config.timeout != undefined ? config.timeout : 2000 ;
+        this.matchMessage = config.matchMessage != undefined ? config.matchMessage : "match" ;
+        this.resetMessage = config.resetMessage != undefined ? config.resetMessage : "reset" ;
+        this.timeoutMessage = config.timeoutMessage != undefined ? config.timeoutMessage : "timeout" ;
         this.indexCheck = 0;
+
         var node = this;
         setStatus(node,"grey");
         node.on('input', function(msg, send, done) {
             try{
+                if(node.timeoutHandle){
+                    clearTimeout(node.timeoutHandle);
+                }
                 send = send || function() { node.send.apply(node,arguments) } //For backwards compatibility with node-red 0.x
-                var messageMatchesCurrentIndex = messageMatches(this.watch, msg, this.sequence[this.indexCheck]);
-                var isLastIndex = this.indexCheck == this.sequence.length - 1;
+                var messageMatchesCurrentIndex = messageMatches(node.watch, msg, node.sequence[node.indexCheck]);
+                var isLastIndex = node.indexCheck == node.sequence.length - 1;
                 if(messageMatchesCurrentIndex){
                     if(isLastIndex){
-                        this.indexCheck = 0;
+                        node.indexCheck = 0;
                         node.lastMatch = new Date();
                         msg.payload = "match";
-                        setStatus(this,"green");
+                        setStatus(node,"green");
                         send([msg, null]);
                     }else{
-                        this.indexCheck = this.indexCheck+1;
-                        setStatus(this,"blue");
+                        node.indexCheck = node.indexCheck+1;
+                        setStatus(node,"blue");
+                        node.timeoutHandle = setTimeout(function(){
+                            node.indexCheck = 0;
+                            msg.payload = "timeout";
+                            setStatus(node,"yellow");
+                            send([null, msg]);
+                        }, 1000)
                         //swallows message
                     }
                 }else{
-                    this.indexCheck = 0;
+                    node.indexCheck = 0;
                     msg.payload = "reset";
-                    setStatus(this,"yellow");
+                    setStatus(node,"yellow");
                     send([null, msg]);
                 }
 
