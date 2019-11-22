@@ -7,7 +7,8 @@
     ],
     "main": "sequence-detector.js",
     "scripts": {
-        "test": "mocha \"test/**/*_spec.js\" -w --timeout 2000"
+        "test": "mocha \"test/**/*_spec.js\" --timeout 2000",
+        "watch": "mocha \"test/**/*_spec.js\" -w --timeout 2000"
     },
     "repository": {
         "type": "git",
