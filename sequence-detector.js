@@ -42,20 +42,23 @@ module.exports = function(RED) {
                         //swallows message
                     }
                 }else{
-                    node.indexCheck = 0;
-                    msg.payload = node.resetMessage;
-                    setStatus(node,"yellow");
-                    send([null, msg]);
+                    if(node.indexCheck != 0){
+                        node.indexCheck = 0;
+                        msg.payload = node.resetMessage;
+                        setStatus(node,"yellow");
+                        send([null, msg]);
+                    }
+                    //otherwise swallow message
                 }
 
                 
 
-                if (done) {
-                    done();
+                if (node.done) {
+                    node.done();
                 }
             }catch(err){
                 if(done){
-                    done(err);
+                    node.done(err);
                 }
                 else
                     node.error(err, msg)

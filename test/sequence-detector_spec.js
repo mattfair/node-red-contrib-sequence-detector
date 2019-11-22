@@ -96,7 +96,7 @@ describe('sequence-detector Node', function () {
     });
   });
 
-  it('should send reset on mismatch', function (done) {
+  it('should not send reset on initial sequence mismatch', function (done) {
     var configSequence = "0";
     var sentSequence = "1";
     var flow = [
@@ -108,13 +108,14 @@ describe('sequence-detector Node', function () {
       var decoder = helper.getNode("n1");
       receiver.on("input", function (msg) {
         try{
-          msg.should.have.property('payload', 'reset');
+          should.fail("Reset message should not be sent.");
           done();
         }catch(err){
           return done(err);
         }
       });
       decoder.receive({ payload: sentSequence[0] });
+      done();
     });
   });
 
@@ -141,8 +142,8 @@ describe('sequence-detector Node', function () {
 
   it('should send custom reset message on mismatch', function (done) {
     var customResetMessage = "startover";
-    var configSequence = "0";
-    var sentSequence = "1";
+    var configSequence = "0\n1";
+    var sentSequence = ["0","0"];
     var flow = [
       { id: "n1", type: "sequence-detector", name: "sequence-detector", resetMessage:customResetMessage, sequence: configSequence,wires:[[],["reset"]] },
       { id: "reset", type: "helper" }
@@ -150,6 +151,8 @@ describe('sequence-detector Node', function () {
     helper.load(decoderNode, flow, function () {
       var receiver = helper.getNode("reset");
       var decoder = helper.getNode("n1");
+      
+      decoder.receive({ payload: sentSequence[0] });
       receiver.on("input", function (msg) {
         try{
           msg.should.have.property('payload', customResetMessage);
@@ -158,7 +161,7 @@ describe('sequence-detector Node', function () {
           return done(err);
         }
       });
-      decoder.receive({ payload: sentSequence[0] });
+      decoder.receive({ payload: sentSequence[1] });
     });
   });
 
@@ -176,6 +179,29 @@ describe('sequence-detector Node', function () {
       receiver.on("input", function (msg) {
         try{
           msg.should.have.property('payload', 'match');
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: sentSequence[1] });
+    });
+  });
+
+  it('should reset on mismatch after a match', function (done) {
+    var configSequence = '0\n1';
+    var sentSequence = ['0','0'];
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", timeout:10000, sequence: configSequence,wires:[[],["reset"]] },
+      { id: "reset", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("reset");
+      var decoder = helper.getNode("n1");
+      decoder.receive({ payload: sentSequence[0] });
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', 'reset');
           done();
         }catch(err){
           return done(err);
@@ -254,26 +280,26 @@ describe('sequence-detector Node', function () {
     });
   }); 
 
-  // it('should timeout', function(done){
-  //   var flow = [
-  //     { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: "0\n1",wires:[["n2"]] },
-  //     { id: "n2", type: "helper" }
-  //   ];
-  //   helper.load(decoderNode, flow, function () {
-  //     var receiver = helper.getNode("n2");
-  //     var decoder = helper.getNode("n1");
-  //     receiver.on("input", function (msg) {
-  //       try{
-  //         msg.should.have.property('payload', 'timeout');
-  //         done();
-  //       }catch(err){
-  //         return done(err);
-  //       }
-  //     });
-  //     decoder.receive({ payload: "0" }); 
-  //   });
+  it('should timeout', function(done){
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: "0\n1",wires:[[],["n2"]] },
+      { id: "n2", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("n2");
+      var decoder = helper.getNode("n1");
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', 'timeout');
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" }); 
+    });
     
-  // });
+  });
 
 });
 
