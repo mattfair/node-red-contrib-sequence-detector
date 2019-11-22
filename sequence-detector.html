@@ -63,8 +63,12 @@
              <dl class="message-properties">
                  <dt>payload <span class="property-type">string</span></dt>
                  <dd>the message payload sent when the sequence detector resets and starts looking for the first element of the sequence again. The output is <code>reset</code>.</dd>
+                 <dd>the message payload sent when the sequence detector reached the timeout limit and starts looking for the first element of the sequence again. The output is <code>timeout</code>.</dd>
              </dl>
+             <p><code>match</code>, <code>reset</code>, and <code>timeout</code> output message payloads can be configured.</p>
          </li>
+
+         
      </ol>
 
 <h3>Details</h3>
@@ -72,8 +76,8 @@
     Messages will be inspected and if a series of messages matches the configured sequence in the exact order, 
     a <code>match</code> message will be sent. </p>
     <p>If any message breaks the sequence, the detector will reset and start to look for the configured sequence from the first element of the sequence again.
-    A <code>reset</code> message will be sent.
-    </p>
+    A <code>reset</code> message will be sent.</p>
+    <p>If the configured timeout elapsed, and <code>timeout</code> message will be sent.</p>
 
 </script>
 
