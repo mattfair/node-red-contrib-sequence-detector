@@ -1,3 +1,5 @@
+![github build](https://github.com/kareem613/node-red-contrib-sequence-detector/workflows/Node.js%20Package/badge.svg)
+
 ## Overview
 The sequence detector can be used to scan input messages for a specific sequence and generate a match message when the input stream of messages matches the sequence. 
 This can be used for input code sequences, triggering based on a complex set of sequential events, or to simplify more complex node structures that produce the same behaviour. 
