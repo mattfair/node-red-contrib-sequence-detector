@@ -27,7 +27,7 @@ module.exports = function(RED) {
                     if(isLastIndex){
                         node.indexCheck = 0;
                         node.lastMatch = new Date();
-                        msg.payload = "match";
+                        msg.payload = node.matchMessage;
                         setStatus(node,"green");
                         send([msg, null]);
                     }else{
@@ -35,7 +35,7 @@ module.exports = function(RED) {
                         setStatus(node,"blue");
                         node.timeoutHandle = setTimeout(function(){
                             node.indexCheck = 0;
-                            msg.payload = "timeout";
+                            msg.payload = node.timeoutMessage;
                             setStatus(node,"yellow");
                             send([null, msg]);
                         }, 1000)
@@ -43,7 +43,7 @@ module.exports = function(RED) {
                     }
                 }else{
                     node.indexCheck = 0;
-                    msg.payload = "reset";
+                    msg.payload = node.resetMessage;
                     setStatus(node,"yellow");
                     send([null, msg]);
                 }

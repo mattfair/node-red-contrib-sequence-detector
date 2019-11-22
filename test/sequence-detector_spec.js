@@ -118,6 +118,50 @@ describe('sequence-detector Node', function () {
     });
   });
 
+  it('should send custom match message on match', function (done) {
+    var customMatchMessage = "matched";
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector",matchMessage:customMatchMessage, sequence: "0",wires:[["n2"]] },
+      { id: "n2", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("n2");
+      var decoder = helper.getNode("n1");
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', customMatchMessage);
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" });
+    });
+  });
+
+  it('should send custom reset message on mismatch', function (done) {
+    var customResetMessage = "startover";
+    var configSequence = "0";
+    var sentSequence = "1";
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", resetMessage:customResetMessage, sequence: configSequence,wires:[[],["reset"]] },
+      { id: "reset", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("reset");
+      var decoder = helper.getNode("n1");
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', customResetMessage);
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: sentSequence[0] });
+    });
+  });
+
   it('should match two element sequence', function (done) {
     var configSequence = '0\n1';
     var sentSequence = ['0','1'];
