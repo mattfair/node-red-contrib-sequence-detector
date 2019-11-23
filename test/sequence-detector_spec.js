@@ -282,7 +282,7 @@ describe('sequence-detector Node', function () {
 
   it('should timeout', function(done){
     var flow = [
-      { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: "0\n1",wires:[[],["n2"]] },
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", timeout:200, sequence: "0\n1",wires:[[],["n2"]] },
       { id: "n2", type: "helper" }
     ];
     helper.load(decoderNode, flow, function () {

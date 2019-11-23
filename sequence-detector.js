@@ -38,7 +38,7 @@ module.exports = function(RED) {
                             msg.payload = node.timeoutMessage;
                             setStatus(node,"yellow");
                             send([null, msg]);
-                        }, 1000)
+                        }, node.timeout)
                         //swallows message
                     }
                 }else{

@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-sequence-detector",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "A Node-RED node that inspects all incoming messages in order and matches against the configured sequence.",
     "keywords": [
         "node-red"
