@@ -25,6 +25,19 @@ module.exports = function(RED) {
         this.timeoutMessage = config.timeoutMessage ? config.timeoutMessage : { payload: "timeout" };
         this.indexCheck = 0;
 
+        if(typeof(this.matchMessage) == 'string')
+        {
+            this.matchMessage = JSON.parse(this.matchMessage);
+        }
+        if(typeof(this.resetMessage) == 'string')
+        {
+            this.resetMessage = JSON.parse(this.resetMessage);
+        }
+        if(typeof(this.timeoutMessage) == 'string')
+        {
+            this.timeoutMessage = JSON.parse(this.timeoutMessage);
+        }
+
         console.log(this.matchMessage);
         console.log(this.resetMessage);
         console.log(this.timeoutMessage);
