@@ -151,13 +151,19 @@
         oneditsave: function() {
             console.log('save')
             console.log(this);
-            this.sequence = "test me";//this.editor.getValue();
+            this.sequence = this.editor.getValue();
+            this.another_sequence = this.editor.getValue();
+            this.does_this_show = "up, I'm not sure?";
             console.log(`saved ${this.sequence}`)
+            console.log(this);
             this.editor.destroy();
             delete this.editor;
 
+            console.log(this);
+
             this.negativeSequence = this.negativeEditor.getValue();
             console.log(`saved ${this.negativeSequence}`)
+            console.log(this);
             this.negativeEditor.destroy();
             delete this.negativeEditor;
 
