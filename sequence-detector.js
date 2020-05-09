@@ -25,6 +25,10 @@ module.exports = function(RED) {
         this.timeoutMessage = config.timeoutMessage ? config.timeoutMessage : { payload: "timeout" };
         this.indexCheck = 0;
 
+        console.log(this.matchMessage);
+        console.log(this.resetMessage);
+        console.log(this.timeoutMessage);
+
         var node = this;
         setStatus(node,"grey");
 
