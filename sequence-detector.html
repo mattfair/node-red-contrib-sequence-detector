@@ -138,15 +138,29 @@
             //     fields:['name','outputs']
             // });
             this.editor.focus();
+
+            $("#node-input-matchMessage").typedInput({
+                default: "json"
+            });
+            $("#node-input-resetMessage").typedInput({
+                default: "json"
+            });
+            $("#node-input-timeoutMessage").typedInput({
+                default: "json"
+            });
         },
         oneditsave: function() {
+            console.log('save')
             $("#node-input-sequence").val(this.editor.getValue());
             this.editor.destroy();
             delete this.editor;
 
+            console.log(this.negativeEditor.getValue());
             $("#node-input-negative-sequence").val(this.negativeEditor.getValue());
             this.negativeEditor.destroy();
             delete this.negativeEditor;
+
+            console.log($("#node-input-negative-sequence").val());
         },
         oneditcancel: function() {
             this.editor.destroy();

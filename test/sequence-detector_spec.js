@@ -54,9 +54,9 @@ describe('sequence-detector Node', function () {
       sequence:"one\ntwo",
       watch: "topic",
       timeout: 1000,
-      matchMessage: "match message",
-      resetMessage: "reset message",
-      timeoutMessage: "timeout message"
+      matchMessage: {payload: "match message"},
+      resetMessage: {payload: "reset message"},
+      timeoutMessage: {payload: "timeout message"}
     }];
     helper.load(decoderNode, flow, function () {
       var n1 = helper.getNode("n1");
@@ -66,9 +66,9 @@ describe('sequence-detector Node', function () {
         n1.should.have.have.property('sequence', ['one', 'two']);
         n1.should.have.have.property('watch', 'topic');
         n1.should.have.have.property('timeout', 1000);
-        n1.should.have.have.property('matchMessage', 'match message');
-        n1.should.have.have.property('resetMessage', 'reset message');
-        n1.should.have.have.property('timeoutMessage', 'timeout message');
+        n1.should.have.have.property('matchMessage', {payload: 'match message'});
+        n1.should.have.have.property('resetMessage', {payload: 'reset message'});
+        n1.should.have.have.property('timeoutMessage', {payload: 'timeout message'});
         done();
       }catch(err){
         return done(err);

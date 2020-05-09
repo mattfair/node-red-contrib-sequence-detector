@@ -21,6 +21,7 @@
         "name": "Kareem Sultan",
         "url": "https://maybe5.com//"
     },
+    "contributors": ["Matt Fair <matt.fair@gmail.com>"],
     "license": "ISC",
     "node-red": {
         "nodes": {
