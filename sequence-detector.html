@@ -122,13 +122,6 @@
             console.log(`prepare ${this.sequence}`)
             console.log(`prepare ${this.negativeSequence}`)
 
-            var editorConfig = {
-                id: 'node-input-sequence-editor',
-                mode: 'ace/mode/handlebars',
-                value: this.sequence
-            };
-            this.editor = RED.editor.createEditor(editorConfig);
-
             var negativeEditorConfig={
                 id: 'node-input-negative-sequence-editor',
                 mode: 'ace/mode/handlebars',
@@ -136,6 +129,12 @@
             };
             this.negativeEditor = RED.editor.createEditor(negativeEditorConfig);
 
+            var editorConfig = {
+                id: 'node-input-sequence-editor',
+                mode: 'ace/mode/handlebars',
+                value: this.sequence
+            };
+            this.editor = RED.editor.createEditor(editorConfig);
             this.editor.focus();
 
             $("#node-input-matchMessage").typedInput({
