@@ -120,11 +120,14 @@
             //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
 
+            console.log(this.sequence);
+            console.log(this.negativeSequence);
+            console.log($("#node-input-negative-sequence").val());
             console.log($("#node-input-sequence").val());
             var editorConfig = {
                 id: 'node-input-sequence-editor',
                 mode: 'ace/mode/handlebars',
-                value: $("#node-input-sequence").val()
+                value: this.sequence
             };
             console.log(editorConfig);
             this.editor = RED.editor.createEditor(editorConfig);
@@ -134,11 +137,12 @@
             var negativeEditorConfig={
                 id: 'node-input-negative-sequence-editor',
                 mode: 'ace/mode/handlebars',
-                value: $("#node-input-negative-sequence").val()
+                value: this.negativeSequence
             };
             console.log(negativeEditorConfig);
             this.negativeEditor = RED.editor.createEditor(negativeEditorConfig);
 
+            this.negativeEditor.focus();
             this.editor.focus();
 
             $("#node-input-matchMessage").typedInput({
@@ -154,11 +158,13 @@
         oneditsave: function() {
             console.log('save')
             $("#node-input-sequence").val(this.editor.getValue());
+            this.sequence= this.editor.getValue();
             this.editor.destroy();
             delete this.editor;
 
             console.log(this.negativeEditor.getValue());
             $("#node-input-negative-sequence").val(this.negativeEditor.getValue());
+            this.negativeSequence = this.negativeEditor.getValue();
             this.negativeEditor.destroy();
             delete this.negativeEditor;
 
