@@ -35,7 +35,7 @@ module.exports = function(RED) {
         node.reset = (color) => {
             node.indexCheck = 0;
             node.history = [];
-            setStatus(node,"yellow");
+            setStatus(node,color);
         };
 
         node.clearTimeout = () => {
@@ -57,9 +57,13 @@ module.exports = function(RED) {
                 }
 
                 var match = msg[node.watch] == node.sequence[node.indexCheck];
+                console.log(msg[node.watch]);
+                console.log(`Match: ${match}`);
                 if( match ){
                     //Sequence matched
                     var isLastIndex = node.indexCheck == node.sequence.length - 1;
+                    console.log(`${node.indexCheck} of ${node.sequence.length}`)
+                    console.log(`isLastIndex: ${isLastIndex}`);
                     if(isLastIndex){
                         var reset = false;
                         //check if negative sequence was matched
@@ -94,12 +98,13 @@ module.exports = function(RED) {
                         node.timeoutHandle = setTimeout(function(){
                             node.reset("yellow");
                             console.log("Timeout sending null and ");
-                            console.log(node.matchMessage);
+                            console.log(node.timeoutMessage);
                             send([null, node.timeoutMessage]);
                         }, node.timeout)
                         //swallows message
                     }
                 }else{
+                    console.log('resetting because not matching');
                     // Reset
                     if(node.indexCheck != 0){
                         node.reset("yellow");
