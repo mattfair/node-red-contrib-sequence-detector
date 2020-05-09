@@ -18,44 +18,23 @@ module.exports = function(RED) {
         }
         this.totalLength = this.sequence.length + this.negativeSequence.length;
 
+        var defaultMatchMessage = { payload: "match" };
+        var defaultResetMessage = { payload: "reset" };
+        var defaultTimeoutMessage = { payload: "timeout" };
+
         this.watch = config.watch ? config.watch : "payload" ;
         this.timeout = config.timeout ? config.timeout : 2000 ;
-        this.matchMessage = config.matchMessage ? config.matchMessage : { payload: "match" };
-        this.resetMessage = config.resetMessage ? config.resetMessage : { payload: "reset" };
-        this.timeoutMessage = config.timeoutMessage ? config.timeoutMessage : { payload: "timeout" };
+        this.matchMessage = config.matchMessage ? toJson(config.matchMessage, defaultMatchMessage) : defaultMatchMessage;
+        this.resetMessage = config.resetMessage ? toJson(config.resetMessage, defaultResetMessage) : defaultResetMessage;
+        this.timeoutMessage = config.timeoutMessage ? toJson(config.timeoutMessage, defaultTimeoutMessage) : defaultTimeoutMessage;
         this.indexCheck = 0;
 
-        console.log('before checking messages...'); 
         console.log(this.matchMessage);
         console.log(typeof(this.matchMessage));
         console.log(this.resetMessage);
         console.log(typeof(this.resetMessage));
         console.log(this.timeoutMessage);
         console.log(typeof(this.timeoutMessage));
-
-        if(typeof(this.matchMessage) == 'string')
-        {
-            console.log(`converting ${this.matchMessage}`)
-            this.matchMessage = JSON.parse(this.matchMessage);
-            console.log(this.matchMessage);
-        }
-        if(typeof(this.resetMessage) == 'string')
-        {
-            console.log(`converting ${this.resetMessage}`)
-            this.resetMessage = JSON.parse(this.resetMessage);
-            console.log(this.resetMessage);
-        }
-        if(typeof(this.timeoutMessage) == 'string')
-        {
-            console.log(`converting ${this.timeoutMessage}`)
-            this.timeoutMessage = JSON.parse(this.timeoutMessage);
-            console.log(this.timeoutMessage);
-        }
-
-        console.log('after convert messages...');
-        console.log(this.matchMessage);
-        console.log(this.resetMessage);
-        console.log(this.timeoutMessage);
 
         var node = this;
         setStatus(node,"grey");
@@ -182,5 +161,20 @@ module.exports = function(RED) {
         });
     }
 
+    function toJson(json, defaultJson) {
+        if(typeof(json) == 'object')
+        {
+            return json;
+        }
+        else if(typeof(json) == 'string' && json.length)
+        {
+            console.log(`converting string to json ${json}`);
+            json=JSON.parse(json);
+            console.log(json);
+            return json;
+        }
+
+        return defaultJson;
+    }
     RED.nodes.registerType("sequence-detector",SequenceDetector);
 }
