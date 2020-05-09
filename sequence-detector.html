@@ -119,6 +119,8 @@
             console.log('prepare');
             //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
+            console.log(`prepare ${this.sequence}`)
+            console.log(`prepare ${this.negativeSequence}`)
 
             var editorConfig = {
                 id: 'node-input-sequence-editor',
@@ -134,7 +136,6 @@
             };
             this.negativeEditor = RED.editor.createEditor(negativeEditorConfig);
 
-            this.negativeEditor.focus();
             this.editor.focus();
 
             $("#node-input-matchMessage").typedInput({
@@ -149,11 +150,13 @@
         },
         oneditsave: function() {
             console.log('save')
-            this.sequence= this.editor.getValue();
+            this.sequence = this.editor.getValue();
+            console.log(`saved ${this.sequence}`)
             this.editor.destroy();
             delete this.editor;
 
             this.negativeSequence = this.negativeEditor.getValue();
+            console.log(`saved ${this.negativeSequence}`)
             this.negativeEditor.destroy();
             delete this.negativeEditor;
         },
