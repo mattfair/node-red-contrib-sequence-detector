@@ -116,6 +116,7 @@
         },
         outputLabels: ["match","reset"],
         oneditprepare: function() {
+            console.log('prepare');
             //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
 
@@ -131,12 +132,6 @@
                 value: $("#node-input-negative-sequence").val()
             });
 
-            // RED.library.create({
-            //     url:"sequences", // where to get the data from
-            //     type:"sequence", // the type of object the library is for
-            //     editor:that.editor, // the field name the main text body goes to
-            //     fields:['name','outputs']
-            // });
             this.editor.focus();
 
             $("#node-input-matchMessage").typedInput({
@@ -163,6 +158,7 @@
             console.log($("#node-input-negative-sequence").val());
         },
         oneditcancel: function() {
+            console.log('edit cancel');
             this.editor.destroy();
             delete this.editor;
 
@@ -180,6 +176,9 @@
                 height -= (parseInt($(editorRows[i]).css("marginTop"))+parseInt($(editorRows[i]).css("marginBottom")));
             }
             height /= 2;
+            if (height < 250) {
+                height = 250;
+            }
             console.log(`resizing text editors to ${height}px`);
             $(".node-text-editor").css("height",height+"px");
             this.editor.resize();
