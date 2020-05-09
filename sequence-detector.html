@@ -6,11 +6,14 @@
     </div>
     <div class="form-row">
         <label for="node-input-watch"><i class="fa fa-search"></i> Watch</span></label>
-        <select id="node-input-watch" style="width:180px;">
-            <option value="topic">Topic</option>
-            <option value="payload">Payload</option>
-            <option value="both">Both</option>
-        </select>
+         <input type="text" id="node-input-watch"></input>
+    </div>
+    <div class="form-row" style="position: relative; margin-bottom: 0px;">
+        <label for="node-input-negative-sequence"><i class="fa fa-ellipsis-h"></i> Negative Sequence</span></label>
+        <input type="hidden" id="node-input-negative-sequence" autofocus="autofocus">
+    </div>
+    <div class="form-row node-text-editor-row">
+        <div style="height:250px;" class="node-text-editor" id="node-input-negative-sequence-editor"></div>
     </div>
     <div class="form-row" style="position: relative; margin-bottom: 0px;">
         <label for="node-input-sequence"><i class="fa fa-ellipsis-h"></i> Sequence</span></label>
@@ -42,7 +45,7 @@
 
     <h3>Inputs</h3>
     <dl class="message-properties">
-        Either the payload, topic, or both can be inspected for sequence detection using the <code>watch</code> config option.
+        Either the payload, or any part of the message can be inspected for sequence detection using the <code>watch</code> config option.
         <dt>payload
             <span class="property-type">string</span>
         </dt>
@@ -72,11 +75,18 @@
      </ol>
 
 <h3>Details</h3>
-    <p><code>msg.payload</code> or <code>msg.topic</code> or both can be used.
+    <p><code>msg.payload</code> or any part of the message can be used.
+    <p>The sequence detector can be configured to scan <code>msg.payload</code> or any other part of the message.
     Messages will be inspected and if a series of messages matches the configured sequence in the exact order, 
     a <code>match</code> message will be sent. </p>
     <p>If any message breaks the sequence, the detector will reset and start to look for the configured sequence from the first element of the sequence again.
     A <code>reset</code> message will be sent.</p>
+    <p> A negative sequence can be defined to ensure that the sequence is not preceeded by a certain
+    sequence, for example the negative sequence 0,1,2 with the sequence 3,4,5.  If the sequence
+    0,1,2,3,4,5 is received, even though 3,4,5 is received it would still send a `reset` because it
+    is preceeded by 0,1,2.  If it preceeded by anything else it would have been a successful match.
+    </p>
+
     <p>If the configured timeout elapsed, and <code>timeout</code> message will be sent.</p>
 
 </script>
@@ -88,11 +98,12 @@
         defaults: {
             name: {value:"Sequence Detector"},
             watch: {value:"topic"},
+            negativeSequence: {value:""},
             sequence: {value:"event1\nevent2\n"},
             timeout: {value:"3000"},
-            matchMessage: {value:"match"},
-            resetMessage: {value:"reset"},
-            timeoutMessage: {value:"timeout"}
+            matchMessage: {value:{ payload : 'match' }},
+            resetMessage: {value:{ payload: 'reset' }},
+            timeoutMessage: {value:{ payload: 'timeout' }}
         },
         inputs:1,
         outputs:2,

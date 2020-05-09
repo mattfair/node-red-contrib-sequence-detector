@@ -1,57 +1,101 @@
+var _ = require('lodash');
+
 module.exports = function(RED) {
     function SequenceDetector(config) {
         RED.nodes.createNode(this,config);
-        if(config.sequence){
+        this.sequence = [];
+        this.negativeSequence = [];
+        this.history = []
+
+        if(config.sequence)
+        {
             this.sequence = config.sequence.split("\n");
-        }else{
-            this.sequence = [];
         }
-        this.watch = config.watch != undefined ? config.watch : "payload" ;
-        this.timeout = config.timeout != undefined ? config.timeout : 2000 ;
-        this.matchMessage = config.matchMessage != undefined ? config.matchMessage : "match" ;
-        this.resetMessage = config.resetMessage != undefined ? config.resetMessage : "reset" ;
-        this.timeoutMessage = config.timeoutMessage != undefined ? config.timeoutMessage : "timeout" ;
+
+        if(config.negativeSequence)
+        {
+            this.negativeSequence = config.negativeSequence.split("\n");
+        }
+        this.totalLength = this.sequence.length + this.negativeSequence.length;
+
+        this.watch = config.watch ? config.watch : "payload" ;
+        this.timeout = config.timeout ? config.timeout : 2000 ;
+        this.matchMessage = config.matchMessage ? config.matchMessage : { payload: "match" };
+        this.resetMessage = config.resetMessage ? config.resetMessage : { payload: "reset" };
+        this.timeoutMessage = config.timeoutMessage ? config.timeoutMessage : { payload: "timeout" };
         this.indexCheck = 0;
 
         var node = this;
         setStatus(node,"grey");
-        node.on('input', function(msg, send, done) {
+
+        node.reset = (color) => {
+            node.indexCheck = 0;
+            node.history = [];
+            setStatus(node,"yellow");
+        };
+
+        node.clearTimeout = () => {
+            if(node.timeoutHandle){
+                clearTimeout(node.timeoutHandle);
+            }
+        };
+
+        node.on('input', (msg, send, done) => {
             try{
-                if(node.timeoutHandle){
-                    clearTimeout(node.timeoutHandle);
-                }
                 send = send || function() { node.send.apply(node,arguments) } //For backwards compatibility with node-red 0.x
-                var messageMatchesCurrentIndex = messageMatches(node.watch, msg, node.sequence[node.indexCheck]);
-                var isLastIndex = node.indexCheck == node.sequence.length - 1;
-                if(messageMatchesCurrentIndex){
+                node.clearTimeout();
+
+                // save history for comparing to later
+                node.history.push(msg[node.watch]);
+                if(node.history.length > node.totalLength){
+                    //trim to max negative squence and sequence size
+                    node.history = node.history.splice(1);
+                }
+
+                var match = msg[node.watch] == node.sequence[node.indexCheck];
+                if( match ){
+                    //Sequence matched
+                    var isLastIndex = node.indexCheck == node.sequence.length - 1;
                     if(isLastIndex){
-                        node.indexCheck = 0;
-                        node.lastMatch = new Date();
-                        msg.payload = node.matchMessage;
-                        setStatus(node,"green");
-                        send([msg, null]);
+                        var reset = false;
+                        //check if negative sequence was matched
+                        if ( node.negativeSequence.length && node.history.length == node.totalLength )
+                        {
+                            var start = 0;
+                            var end = node.negativeSequence.length;
+                            var negative = node.history.slice(start, end);
+                            reset = _.isEqual(negative, node.negativeSequence);
+                        }
+
+                        if ( reset )
+                        {
+                            node.reset("yellow");
+                            send([null, node.resetMessage]);
+                        }
+                        else
+                        {
+                            node.lastMatch = new Date();
+                            node.reset("green");
+                            send([node.matchMessage, null]);
+                        }
                     }else{
+                        //Next match
                         node.indexCheck = node.indexCheck+1;
                         setStatus(node,"blue");
                         node.timeoutHandle = setTimeout(function(){
-                            node.indexCheck = 0;
-                            msg.payload = node.timeoutMessage;
-                            setStatus(node,"yellow");
-                            send([null, msg]);
+                            node.reset("yellow");
+                            send([null, node.timeoutMessage]);
                         }, node.timeout)
                         //swallows message
                     }
                 }else{
+                    // Reset
                     if(node.indexCheck != 0){
-                        node.indexCheck = 0;
-                        msg.payload = node.resetMessage;
-                        setStatus(node,"yellow");
-                        send([null, msg]);
+                        node.reset("yellow");
+                        send([null, node.resetMessage]);
                     }
                     //otherwise swallow message
                 }
-
-                
 
                 if (node.done) {
                     node.done();
@@ -92,15 +136,5 @@ module.exports = function(RED) {
         });
     }
 
-    function messageMatches(watch, msg, matchValue){
-        var payloadMatchesCurrentIndex = (msg.payload == matchValue)
-        var topicMatchesCurrentIndex = (msg.topic == matchValue)
-        if(watch == "payload")
-            return payloadMatchesCurrentIndex;
-        else if(watch == "topic")
-            return topicMatchesCurrentIndex;
-        else
-            return payloadMatchesCurrentIndex || topicMatchesCurrentIndex;
-    }
     RED.nodes.registerType("sequence-detector",SequenceDetector);
 }

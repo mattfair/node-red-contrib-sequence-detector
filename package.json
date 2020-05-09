@@ -8,7 +8,7 @@
     "main": "sequence-detector.js",
     "scripts": {
         "test": "mocha \"test/**/*_spec.js\" --timeout 2000",
-        "test:watch": "mocha \"test/**/*_spec.js\" -w --timeout 2000"
+        "test:watch": "mocha \"test/**/*_spec.js\" -w --timeout 9000"
     },
     "repository": {
         "type": "git",
@@ -31,5 +31,8 @@
         "mocha": "~6.2.2",
         "node-red": "^0.18.4",
         "node-red-node-test-helper": "^0.1.8"
+    },
+    "dependencies": {
+        "lowdash": "^1.2.0"
     }
 }

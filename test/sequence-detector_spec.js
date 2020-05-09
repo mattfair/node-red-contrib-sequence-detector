@@ -19,7 +19,7 @@ describe('sequence-detector Node', function () {
     var flow = [{ id: "n1", type: "sequence-detector", name: "sequence-detector"}];
     helper.load(decoderNode, flow, function () {
       var n1 = helper.getNode("n1");
-      
+
       try{
         n1.should.have.have.property('name', 'sequence-detector');
         done();
@@ -39,9 +39,9 @@ describe('sequence-detector Node', function () {
         n1.should.have.have.property('sequence', []);
         n1.should.have.have.property('watch', 'payload');
         n1.should.have.have.property('timeout', 2000);
-        n1.should.have.have.property('matchMessage', 'match');
-        n1.should.have.have.property('resetMessage', 'reset');
-        n1.should.have.have.property('timeoutMessage', 'timeout');
+        n1.should.have.have.property('matchMessage', {payload:'match'});
+        n1.should.have.have.property('resetMessage', {payload:'reset'});
+        n1.should.have.have.property('timeoutMessage', {payload:'timeout'});
         done();
       }catch(err){
         return done(err);
@@ -96,6 +96,56 @@ describe('sequence-detector Node', function () {
     });
   });
 
+  it('should match long sequence', function (done) {
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: "3\n4\n5",wires:[["n2"]] },
+      { id: "n2", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("n2");
+      var decoder = helper.getNode("n1");
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', 'match');
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+      decoder.receive({ payload: "2" });
+      decoder.receive({ payload: "3" });
+      decoder.receive({ payload: "4" });
+      decoder.receive({ payload: "5" });
+    });
+  });
+
+  it('should not match because of negative sequence', function (done) {
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", negativeSequence: "0\n1\n2", sequence: "3\n4\n5",wires:[[],["reset"]] },
+      { id: "reset", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("reset");
+      var decoder = helper.getNode("n1");
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', 'reset');
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+      decoder.receive({ payload: "2" });
+      decoder.receive({ payload: "3" });
+      decoder.receive({ payload: "4" });
+      decoder.receive({ payload: "5" });
+    });
+  });
+
   it('should not send reset on initial sequence mismatch', function (done) {
     var configSequence = "0";
     var sentSequence = "1";
@@ -120,7 +170,7 @@ describe('sequence-detector Node', function () {
   });
 
   it('should send custom match message on match', function (done) {
-    var customMatchMessage = "matched";
+    var customMatchMessage = {payload:"matched"};
     var flow = [
       { id: "n1", type: "sequence-detector", name: "sequence-detector",matchMessage:customMatchMessage, sequence: "0",wires:[["n2"]] },
       { id: "n2", type: "helper" }
@@ -130,7 +180,7 @@ describe('sequence-detector Node', function () {
       var decoder = helper.getNode("n1");
       receiver.on("input", function (msg) {
         try{
-          msg.should.have.property('payload', customMatchMessage);
+          msg.should.have.property('payload', customMatchMessage.payload);
           done();
         }catch(err){
           return done(err);
@@ -141,7 +191,7 @@ describe('sequence-detector Node', function () {
   });
 
   it('should send custom reset message on mismatch', function (done) {
-    var customResetMessage = "startover";
+    var customResetMessage = { payload: "startover" };
     var configSequence = "0\n1";
     var sentSequence = ["0","0"];
     var flow = [
@@ -155,7 +205,7 @@ describe('sequence-detector Node', function () {
       decoder.receive({ payload: sentSequence[0] });
       receiver.on("input", function (msg) {
         try{
-          msg.should.have.property('payload', customResetMessage);
+          msg.should.have.property('payload', customResetMessage.payload);
           done();
         }catch(err){
           return done(err);
@@ -234,52 +284,6 @@ describe('sequence-detector Node', function () {
     });
   });
 
-  it('should match on topic when watch is both', function (done) {
-    var sequence = "1";
-    var payload = "0";
-    var topic = "1";
-    var flow = [
-      { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: sequence, watch: "both",wires:[["n2"]] },
-      { id: "n2", type: "helper" }
-    ];
-    helper.load(decoderNode, flow, function () {
-      var receiver = helper.getNode("n2");
-      var decoder = helper.getNode("n1");
-      receiver.on("input", function (msg) {
-        try{
-          msg.should.have.property('payload', 'match');
-          done();
-        }catch(err){
-          return done(err);
-        }
-      });
-      decoder.receive({topic:topic, payload: payload });
-    });
-  });
-
-  it('should match on payload when watch is both', function (done) {
-    var sequence = "1";
-    var payload = "1";
-    var topic = "0";
-    var flow = [
-      { id: "n1", type: "sequence-detector", name: "sequence-detector", sequence: sequence, watch: "both",wires:[["n2"]] },
-      { id: "n2", type: "helper" }
-    ];
-    helper.load(decoderNode, flow, function () {
-      var receiver = helper.getNode("n2");
-      var decoder = helper.getNode("n1");
-      receiver.on("input", function (msg) {
-        try{
-          msg.should.have.property('payload', 'match');
-          done();
-        }catch(err){
-          return done(err);
-        }
-      });
-      decoder.receive({topic:topic, payload: payload });
-    });
-  }); 
-
   it('should timeout', function(done){
     var flow = [
       { id: "n1", type: "sequence-detector", name: "sequence-detector", timeout:200, sequence: "0\n1",wires:[[],["n2"]] },
@@ -296,9 +300,8 @@ describe('sequence-detector Node', function () {
           return done(err);
         }
       });
-      decoder.receive({ payload: "0" }); 
+      decoder.receive({ payload: "0" });
     });
-    
   });
 
 });
