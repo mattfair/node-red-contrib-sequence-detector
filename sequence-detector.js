@@ -29,13 +29,6 @@ module.exports = function(RED) {
         this.timeoutMessage = config.timeoutMessage ? toJson(config.timeoutMessage, defaultTimeoutMessage) : defaultTimeoutMessage;
         this.indexCheck = 0;
 
-        console.log(this.matchMessage);
-        console.log(typeof(this.matchMessage));
-        console.log(this.resetMessage);
-        console.log(typeof(this.resetMessage));
-        console.log(this.timeoutMessage);
-        console.log(typeof(this.timeoutMessage));
-
         var node = this;
         setStatus(node,"grey");
 
@@ -64,13 +57,9 @@ module.exports = function(RED) {
                 }
 
                 var match = msg[node.watch] == node.sequence[node.indexCheck];
-                console.log(msg[node.watch]);
-                console.log(`Match: ${match}`);
                 if( match ){
                     //Sequence matched
                     var isLastIndex = node.indexCheck == node.sequence.length - 1;
-                    console.log(`${node.indexCheck} of ${node.sequence.length}`)
-                    console.log(`isLastIndex: ${isLastIndex}`);
                     if(isLastIndex){
                         var reset = false;
                         //check if negative sequence was matched
@@ -80,22 +69,17 @@ module.exports = function(RED) {
                             var end = node.negativeSequence.length;
                             var negative = node.history.slice(start, end);
                             reset = _.isEqual(negative, node.negativeSequence);
-                            console.log(`comparing ${negative} is equal to ${node.negativeSequence}, ${reset}`);
                         }
 
                         if ( reset )
                         {
                             node.reset("yellow");
-                            console.log("resetting because negative match, sending null and");
-                            console.log(node.resetMessage);
                             send([null, node.resetMessage]);
                         }
                         else
                         {
                             node.lastMatch = new Date();
                             node.reset("green");
-                            console.log("Match sending");
-                            console.log(node.matchMessage);
                             send([node.matchMessage, null]);
                         }
                     }else{
@@ -104,19 +88,14 @@ module.exports = function(RED) {
                         setStatus(node,"blue");
                         node.timeoutHandle = setTimeout(function(){
                             node.reset("yellow");
-                            console.log("Timeout sending null and ");
-                            console.log(node.timeoutMessage);
                             send([null, node.timeoutMessage]);
                         }, node.timeout)
                         //swallows message
                     }
                 }else{
-                    console.log('resetting because not matching');
                     // Reset
                     if(node.indexCheck != 0){
                         node.reset("yellow");
-                        console.log("reset sending null and ");
-                        console.log(node.resetMessage);
                         send([null, node.resetMessage]);
                     }
                     //otherwise swallow message
@@ -168,10 +147,7 @@ module.exports = function(RED) {
         }
         else if(typeof(json) == 'string' && json.length)
         {
-            console.log(`converting string to json ${json}`);
-            json=JSON.parse(json);
-            console.log(json);
-            return json;
+            return JSON.parse(json);
         }
 
         return defaultJson;
