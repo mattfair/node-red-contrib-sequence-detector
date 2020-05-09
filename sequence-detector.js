@@ -27,15 +27,21 @@ module.exports = function(RED) {
 
         if(typeof(this.matchMessage) == 'string')
         {
+            console.log(`converting ${this.matchMessage}`)
             this.matchMessage = JSON.parse(this.matchMessage);
+            console.log(this.matchMessage);
         }
         if(typeof(this.resetMessage) == 'string')
         {
+            console.log(`converting ${this.resetMessage}`)
             this.resetMessage = JSON.parse(this.resetMessage);
+            console.log(this.resetMessage);
         }
         if(typeof(this.timeoutMessage) == 'string')
         {
+            console.log(`converting ${this.timeoutMessage}`)
             this.timeoutMessage = JSON.parse(this.timeoutMessage);
+            console.log(this.timeoutMessage);
         }
 
         console.log(this.matchMessage);
