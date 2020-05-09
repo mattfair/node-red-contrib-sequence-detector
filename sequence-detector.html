@@ -10,14 +10,12 @@
     </div>
     <div class="form-row" style="position: relative; margin-bottom: 0px;">
         <i class="fa fa-ellipsis-h"></i> Negative Sequence
-        <input type="hidden" id="node-input-negative-sequence" autofocus="autofocus">
     </div>
     <div class="form-row node-text-editor-row">
         <div style="height:250px;" class="node-text-editor" id="node-input-negative-sequence-editor"></div>
     </div>
     <div class="form-row" style="position: relative; margin-bottom: 0px;">
         <i class="fa fa-ellipsis-h"></i> Sequence
-        <input type="hidden" id="node-input-sequence" autofocus="autofocus">
     </div>
     <div class="form-row node-text-editor-row">
         <div style="height:250px;" class="node-text-editor" id="node-input-sequence-editor"></div>
@@ -126,14 +124,14 @@
             var negativeEditorConfig={
                 id: 'node-input-negative-sequence-editor',
                 mode: 'ace/mode/handlebars',
-                value: this.negativeSequence
+                value: that.negativeSequence
             };
             this.negativeEditor = RED.editor.createEditor(negativeEditorConfig);
 
             var editorConfig = {
                 id: 'node-input-sequence-editor',
                 mode: 'ace/mode/handlebars',
-                value: this.sequence
+                value: that.sequence
             };
             this.editor = RED.editor.createEditor(editorConfig);
             this.editor.focus();
