@@ -117,6 +117,7 @@
         outputLabels: ["match","reset"],
         oneditprepare: function() {
             console.log('prepare');
+            console.log(this);
             //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
             console.log(`prepare ${this.sequence}`)
@@ -149,6 +150,7 @@
         },
         oneditsave: function() {
             console.log('save')
+            console.log(this);
             this.sequence = this.editor.getValue();
             console.log(`saved ${this.sequence}`)
             this.editor.destroy();
@@ -158,6 +160,9 @@
             console.log(`saved ${this.negativeSequence}`)
             this.negativeEditor.destroy();
             delete this.negativeEditor;
+
+            console.log('after save');
+            console.log(this);
         },
         oneditcancel: function() {
             console.log('edit cancel');
