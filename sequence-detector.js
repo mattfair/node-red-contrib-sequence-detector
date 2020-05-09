@@ -25,6 +25,14 @@ module.exports = function(RED) {
         this.timeoutMessage = config.timeoutMessage ? config.timeoutMessage : { payload: "timeout" };
         this.indexCheck = 0;
 
+        console.log('before checking messages...'); 
+        console.log(this.matchMessage);
+        console.log(typeof(this.matchMessage));
+        console.log(this.resetMessage);
+        console.log(typeof(this.resetMessage));
+        console.log(this.timeoutMessage);
+        console.log(typeof(this.timeoutMessage));
+
         if(typeof(this.matchMessage) == 'string')
         {
             console.log(`converting ${this.matchMessage}`)
@@ -44,6 +52,7 @@ module.exports = function(RED) {
             console.log(this.timeoutMessage);
         }
 
+        console.log('after convert messages...');
         console.log(this.matchMessage);
         console.log(this.resetMessage);
         console.log(this.timeoutMessage);
