@@ -69,17 +69,22 @@ module.exports = function(RED) {
                             var end = node.negativeSequence.length;
                             var negative = node.history.slice(start, end);
                             reset = _.isEqual(negative, node.negativeSequence);
+                            console.log(`comparing ${negative} is equal to ${node.negativeSequence}, ${reset}`);
                         }
 
                         if ( reset )
                         {
                             node.reset("yellow");
+                            console.log("resetting because negative match, sending null and");
+                            console.log(node.resetMessage);
                             send([null, node.resetMessage]);
                         }
                         else
                         {
                             node.lastMatch = new Date();
                             node.reset("green");
+                            console.log("Match sending");
+                            console.log(node.matchMessage);
                             send([node.matchMessage, null]);
                         }
                     }else{
@@ -88,6 +93,8 @@ module.exports = function(RED) {
                         setStatus(node,"blue");
                         node.timeoutHandle = setTimeout(function(){
                             node.reset("yellow");
+                            console.log("Timeout sending null and ");
+                            console.log(node.matchMessage);
                             send([null, node.timeoutMessage]);
                         }, node.timeout)
                         //swallows message
@@ -96,6 +103,8 @@ module.exports = function(RED) {
                     // Reset
                     if(node.indexCheck != 0){
                         node.reset("yellow");
+                        console.log("reset sending null and ");
+                        console.log(node.resetMessage);
                         send([null, node.resetMessage]);
                     }
                     //otherwise swallow message
