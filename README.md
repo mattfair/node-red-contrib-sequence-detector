@@ -1,4 +1,4 @@
-![github build](https://github.com/mattfair/node-red-contrib-sequence-detector/workflows/Node.js%20Package/badge.svg)
+![github build](https://github.com/kareem613/node-red-contrib-sequence-detector/workflows/Node.js%20Package/badge.svg)
 
 ## Overview
 The sequence detector can be used to scan input messages for a specific sequence and generate a match message when the input stream of messages matches the sequence. 
@@ -15,24 +15,19 @@ A negative sequence can be defined to ensure that the sequence is not preceeded 
 Inspects all incoming messages in order and matches against the configured sequence.
     
 ### Inputs
-    
-    Either the payload, topic, or both can be inspected for sequence detection using the `watch` config option.
-#### payload
- 
-    the payload of the message to inspect.
- 
- #### topic
-    the topic to inspect.
-    
+Either the payload, topic, or both can be inspected for sequence detection using the `watch` config option.
 
- ### Outputs
+#### payload
+the payload of the message to inspect.
+ 
+#### topic
+the topic to inspect.
+
+### Outputs
 
 #### Match
-          
-    the message payload sent when the full sequence is detected in exact order. The output is `match`.
-         
+the message payload sent when the full sequence is detected in exact order. The output is `match`.
+
 #### Reset 
-           
-    the message payload sent when the sequence detector resets and starts looking for the first element of the sequence again. The output is `reset`.
-             
+the message payload sent when the sequence detector resets and starts looking for the first element of the sequence again. The output is `reset`.
 

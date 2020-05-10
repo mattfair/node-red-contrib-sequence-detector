@@ -131,6 +131,12 @@
             this.editor = RED.editor.createEditor(editorConfig);
             this.editor.focus();
 
+            $("#node-input-timeout").typedInput({
+                types: ["msg","global","flow","num"],
+                default: "num",
+                typefield: that.timeout
+            });
+
             $("#node-input-matchMessage").typedInput({
                 default: "json"
             });

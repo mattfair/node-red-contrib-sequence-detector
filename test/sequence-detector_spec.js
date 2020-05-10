@@ -303,6 +303,4 @@ describe('sequence-detector Node', function () {
       decoder.receive({ payload: "0" });
     });
   });
-
 });
-
