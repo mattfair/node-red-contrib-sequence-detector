@@ -114,12 +114,7 @@
         },
         outputLabels: ["match","reset"],
         oneditprepare: function() {
-            console.log('prepare');
-            console.log(this);
-            //console.log(this._("node-red-local-decoder/decoder:decoder.label.sequence"));
             var that = this;
-            console.log(`prepare ${this.sequence}`)
-            console.log(`prepare ${this.negativeSequence}`)
 
             var negativeEditorConfig={
                 id: 'node-input-negative-sequence-editor',
@@ -147,33 +142,15 @@
             });
         },
         oneditsave: function() {
-            console.log('save')
-            console.log(this);
             this.sequence = this.editor.getValue();
-            console.log(this);
-            console.log('should have values saved');
-            console.log(this.sequence);
-            this.another_sequence = this.editor.getValue();
-            console.log(this);
-            this.does_this_show = "up, I'm not sure?";
-            console.log(this);
-            console.log(`saved ${this.sequence}`)
             this.editor.destroy();
             delete this.editor;
 
-            console.log(this);
-
             this.negativeSequence = this.negativeEditor.getValue();
-            console.log(`saved ${this.negativeSequence}`)
-            console.log(this);
             this.negativeEditor.destroy();
             delete this.negativeEditor;
-
-            console.log('after save');
-            console.log(this);
         },
         oneditcancel: function() {
-            console.log('edit cancel');
             this.editor.destroy();
             delete this.editor;
 
@@ -194,7 +171,6 @@
             if (height < 100) {
                 height = 100;
             }
-            console.log(`resizing text editors to ${height}px`);
             $(".node-text-editor").css("height",height+"px");
             this.editor.resize();
             this.negativeEditor.resize();
