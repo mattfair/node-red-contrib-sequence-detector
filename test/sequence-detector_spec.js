@@ -146,6 +146,36 @@ describe('sequence-detector Node', function () {
     });
   });
 
+  it('should not match because of negative sequence and remember history', function (done) {
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", negativeSequence: "0", sequence: "1\n0",wires:[[],["reset"]] },
+      { id: "reset", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      var receiver = helper.getNode("reset");
+      var decoder = helper.getNode("n1");
+      receiver.count = 0;
+      receiver.on("input", function (msg) {
+        try{
+          msg.should.have.property('payload', 'reset');
+          if(++this.count == 2)
+          {
+            done();
+          }
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+    });
+  });
+
+
   it('should not send reset on initial sequence mismatch', function (done) {
     var configSequence = "0";
     var sentSequence = "1";

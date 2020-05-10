@@ -34,7 +34,6 @@ module.exports = function(RED) {
 
         node.reset = (color) => {
             node.indexCheck = 0;
-            node.history = [];
             setStatus(node,color);
         };
 
@@ -51,7 +50,7 @@ module.exports = function(RED) {
 
                 // save history for comparing to later
                 node.history.push(msg[node.watch]);
-                if(node.history.length > node.totalLength){
+                if(node.history.length > node.totalLength*2){
                     //trim to max negative squence and sequence size
                     node.history = node.history.splice(1);
                 }
@@ -63,10 +62,10 @@ module.exports = function(RED) {
                     if(isLastIndex){
                         var reset = false;
                         //check if negative sequence was matched
-                        if ( node.negativeSequence.length && node.history.length == node.totalLength )
+                        if ( node.negativeSequence.length && node.history.length >= node.totalLength )
                         {
-                            var start = 0;
-                            var end = node.negativeSequence.length;
+                            var start = node.history.length - node.sequence.length - node.negativeSequence.length;
+                            var end = node.history.length - node.sequence.length;
                             var negative = node.history.slice(start, end);
                             reset = _.isEqual(negative, node.negativeSequence);
                         }
@@ -86,7 +85,6 @@ module.exports = function(RED) {
                         //Next match
                         node.indexCheck = node.indexCheck+1;
                         setStatus(node,"blue");
-                        console.log(`resetting timeout to ${node.timeout}`); 
                         node.timeoutHandle = setTimeout(function(){
                             node.reset("yellow");
                             send([null, node.timeoutMessage]);
