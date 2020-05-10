@@ -86,6 +86,7 @@ module.exports = function(RED) {
                         //Next match
                         node.indexCheck = node.indexCheck+1;
                         setStatus(node,"blue");
+                        console.log(`resetting timeout to ${node.timeout}`); 
                         node.timeoutHandle = setTimeout(function(){
                             node.reset("yellow");
                             send([null, node.timeoutMessage]);
