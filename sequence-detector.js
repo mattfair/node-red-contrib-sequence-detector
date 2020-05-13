@@ -56,8 +56,9 @@ module.exports = function(RED) {
                     node.timeoutHandle = setTimeout((node)=>{
                         console.log('got timeout');
                         console.log(new Date());
-                        node.reset("tan");
+                        node.indexCheck = 0;
                         node.history=[];
+                        node.setStatusRing();
                         console.log('sending timeout...');
                         send([null, node.timeoutMessage]);
                     }, node.timeout, node);
@@ -130,6 +131,10 @@ module.exports = function(RED) {
 
     function setStatus(node,fill){
         node.status({fill:fill,shape:"dot",text: getStatusString(node)});
+    }
+
+    function setStatusRing(node){
+        node.status({shape:"ring"});
     }
 
     function getStatusString(node){
