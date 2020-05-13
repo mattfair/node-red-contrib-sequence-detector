@@ -58,7 +58,7 @@ module.exports = function(RED) {
                         console.log(new Date());
                         node.indexCheck = 0;
                         node.history=[];
-                        node.setStatusRing();
+                        node.setStatus('yellow','ring');
                         console.log('sending timeout...');
                         send([null, node.timeoutMessage]);
                     }, node.timeout, node);
@@ -129,12 +129,9 @@ module.exports = function(RED) {
         });
     }
 
-    function setStatus(node,fill){
-        node.status({fill:fill,shape:"dot",text: getStatusString(node)});
-    }
-
-    function setStatusRing(node){
-        node.status({shape:"ring"});
+    function setStatus(node,fill,shape){
+        shape = shape?shape:'dot';
+        node.status({fill:fill,shape:shape,text: getStatusString(node)});
     }
 
     function getStatusString(node){
