@@ -32,9 +32,9 @@ module.exports = function(RED) {
         var node = this;
         setStatus(node,"grey");
 
-        node.reset = (color) => {
+        node.reset = (color,shape) => {
             node.indexCheck = 0;
-            setStatus(node,color);
+            setStatus(node,color,shape);
         };
 
         node.clearTimeout = () => {
@@ -56,9 +56,8 @@ module.exports = function(RED) {
                     node.timeoutHandle = setTimeout((node)=>{
                         console.log('got timeout');
                         console.log(new Date());
-                        node.indexCheck = 0;
+                        node.reset("yellow","ring");
                         node.history=[];
-                        node.setStatus('yellow','ring');
                         console.log('sending timeout...');
                         send([null, node.timeoutMessage]);
                     }, node.timeout, node);
