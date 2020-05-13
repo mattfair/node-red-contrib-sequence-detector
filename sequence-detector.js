@@ -39,21 +39,38 @@ module.exports = function(RED) {
 
         node.clearTimeout = () => {
             if(node.timeoutHandle){
+                console.log('clearing timeout');
                 clearTimeout(node.timeoutHandle);
+                node.timeoutHandle = 0;
             }
         };
 
+        console.log(node.history);
         node.on('input', (msg, send, done) => {
             try{
-                send = send || function() { node.send.apply(node,arguments) } //For backwards compatibility with node-red 0.x
-                node.clearTimeout();
+                if(node.indexCheck == 0)
+                {
+                    node.clearTimeout();
+                    console.log(`setting timeout...${node.timeout}`);
+                    console.log(new Date());
+                    node.timeoutHandle = setTimeout((node)=>{
+                        console.log('got timeout');
+                        console.log(new Date());
+                        node.reset("tan");
+                        node.history=[];
+                        console.log('sending timeout...');
+                        send([null, node.timeoutMessage]);
+                    }, node.timeout, node);
+                }
 
+                send = send || function() { node.send.apply(node,arguments) } //For backwards compatibility with node-red 0.x
                 // save history for comparing to later
                 node.history.push(msg[node.watch]);
                 if(node.history.length > node.totalLength*2){
                     //trim to max negative squence and sequence size
                     node.history = node.history.splice(1);
                 }
+
 
                 var match = msg[node.watch] == node.sequence[node.indexCheck];
                 if( match ){
@@ -72,24 +89,22 @@ module.exports = function(RED) {
 
                         if ( reset )
                         {
+                            console.log('reset');
                             node.reset("yellow");
                             send([null, node.resetMessage]);
                         }
                         else
                         {
+                            console.log('match');
                             node.lastMatch = new Date();
                             node.reset("green");
+                            console.log('sending');
+                            console.log(node.matchMessage);
                             send([node.matchMessage, null]);
                         }
                     }else{
-                        //Next match
                         node.indexCheck = node.indexCheck+1;
                         setStatus(node,"blue");
-                        node.timeoutHandle = setTimeout(function(){
-                            node.reset("yellow");
-                            send([null, node.timeoutMessage]);
-                        }, node.timeout)
-                        //swallows message
                     }
                 }else{
                     // Reset

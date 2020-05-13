@@ -154,13 +154,51 @@ describe('sequence-detector Node', function () {
     helper.load(decoderNode, flow, function () {
       var receiver = helper.getNode("reset");
       var decoder = helper.getNode("n1");
-      receiver.count = 0;
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
+      decoder.receive({ payload: "0" });
+      decoder.receive({ payload: "1" });
       receiver.on("input", function (msg) {
         try{
           msg.should.have.property('payload', 'reset');
-          if(++this.count == 2)
+          done();
+        }catch(err){
+          return done(err);
+        }
+      });
+      decoder.receive({ payload: "0" });
+    });
+  });
+
+  it('should match when negative sequence history is cleared', function (done) {
+    this.timeout(10000);
+    var flow = [
+      { id: "n1", type: "sequence-detector", name: "sequence-detector", timeout:2000, negativeSequence: "0", sequence: "1\n0",wires:[[],["reset"]] },
+      { id: "reset", type: "helper" }
+    ];
+    helper.load(decoderNode, flow, function () {
+      const RESET = 0;
+      const TIMEOUT = 1;
+      const MATCH = 2;
+
+      var receiver = helper.getNode("reset");
+      var decoder = helper.getNode("n1");
+      receiver.state = RESET;
+      receiver.on("input", function (msg) {
+        try{
+          if(receiver.state == RESET)
           {
-            done();
+            console.log('should have reset');
+            console.log(msg);
+            msg.should.have.property('payload', 'reset');
+            receiver.state = TIMEOUT;
+          }
+          else if(receiver.state == TIMEOUT)
+          {
+            console.log('should have timeout');
+            console.log(msg);
+            msg.should.have.property('payload', 'timeout');
+            receiver.state = MATCH;
           }
         }catch(err){
           return done(err);
@@ -170,11 +208,26 @@ describe('sequence-detector Node', function () {
       decoder.receive({ payload: "1" });
       decoder.receive({ payload: "0" });
       decoder.receive({ payload: "1" });
-      decoder.receive({ payload: "0" });
-      decoder.receive({ payload: "1" });
+
+      setTimeout((decoder, receiver)=>{
+         console.log('sending something to match after timeout...');
+        //send something to match after timeout
+        receiver.on("input", function (msg) {
+          try{
+              console.log('should have match');
+              console.log(msg);
+              msg.should.have.property('payload', 'match');
+              console.log('done');
+              done();
+          }catch(err){
+            return done(err);
+          }
+        });
+        decoder.receive({ payload: "1" });
+        decoder.receive({ payload: "0" });
+      }, 4000, decoder, receiver);
     });
   });
-
 
   it('should not send reset on initial sequence mismatch', function (done) {
     var configSequence = "0";
